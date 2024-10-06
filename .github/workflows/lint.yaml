@@ -1,0 +1,35 @@
+---
+name: Lint Ansible Playbooks
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
+
+jobs:
+  lint:
+    runs-on: ubuntu-24.04
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v2
+
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.11'
+
+      - name: Install Ansible and Ansible Lint
+        run: |
+          sudo apt update
+          sudo apt install -y python3-pip
+          python -m pip install --upgrade pip
+          pip install ansible ansible-lint
+
+      - name: Run Ansible Lint
+        run: |
+          ansible-lint roles/*/tasks/*.yml
+          ansible-lint playbooks/*.yml
